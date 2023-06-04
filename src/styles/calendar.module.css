@@ -1,3 +1,48 @@
 .calendar {
-  
+  --primary-color : #db1b5b;
+  --primary-color-rgb : 219, 27, 91;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
 }
+
+.hoursLinesContainer {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  border: solid 1px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.5;
+}
+
+.hoursLines {
+  border: 1px solid rgb(220, 220, 220);
+  text-align: end;
+}
+
+.event {
+  position: relative;
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  border: solid 1px var(--primary-color);
+  border-radius: 2px;
+}
+
+.event .tooltip {
+  display: none;
+  position: absolute;
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 3px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.event:hover .tooltip{
+  display: block;
+}
+
+
+
