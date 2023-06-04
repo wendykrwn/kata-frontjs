@@ -1,6 +1,10 @@
+import styles from "../styles/calendar.module.css"
+
 const Calendar = () => {
   return (
-    <div>Calendar</div>
+    <div className={styles.calendar}>
+      Calendar
+    </div>
   )
 }
 
