@@ -82,44 +82,103 @@ export const getWidthEventPercent = (inputs: InputType[]) => {
 
   if (eventSorted?.length > 0) {
     eventSorted[0].percentWidth = 100
+    eventSorted[0].overlapsEvents = []
+    eventSorted[0].percentPositionX = 0
 
     for (let i = 1; i < eventSorted.length; i++) {
-      // for (let j = i + 1; j < eventSorted.length; j++) {
-      //   if (i !== j) {
       const currentEvent = eventSorted[i]
       // Liste des events qui overlaps avec eventSorted[j]
-      const overlapsEventToTheNext = [...eventSorted]
+      const overlapsEvents = [...eventSorted]
         .splice(0, i)
         ?.filter((event) => isOverlap(event, currentEvent))
 
-      const numberOfoverlapsEvent = overlapsEventToTheNext.length
+      currentEvent.overlapsEvents = [...overlapsEvents]
 
-      if (numberOfoverlapsEvent == 0) currentEvent.percentWidth = 100
-      else {
+      // console.log({ eventSorted, overlapsEventToTheNext: overlapsEvents })
+      const numberOfoverlapsEvent = overlapsEvents.length
+
+      if (numberOfoverlapsEvent == 0) {
+        currentEvent.percentWidth = 100
+        currentEvent.percentPositionX = 0
+      } else {
         const percentWidth = 100 / (numberOfoverlapsEvent + 1)
         currentEvent.percentWidth = percentWidth
         let eventWidthPercent = 100
 
-        overlapsEventToTheNext.forEach((event) => {
-          if (event.percentWidth && event.percentWidth >= percentWidth) {
-            event.percentWidth = percentWidth
-          } else {
-            if (event.percentWidth) eventWidthPercent -= event.percentWidth
+        const eventsOverlapsArePlaced = currentEvent.overlapsEvents?.find(
+          (val, index) =>
+            val.percentWidth &&
+            val.percentPositionX !== index * val.percentWidth
+        )
+        overlapsEvents.forEach((event, index) => {
+          if (event.overlapsEvents)
+            event.overlapsEvents = [...event.overlapsEvents, currentEvent]
+          console.log({ CURRENT: currentEvent })
+          if (event.percentWidth) {
+            if (event.percentWidth >= percentWidth) {
+              console.log({ eventsOverlapsArePlaced, event })
+              if (eventsOverlapsArePlaced) {
+                let posX = 0
+
+                for (
+                  let index = 0;
+                  event.overlapsEvents?.length &&
+                  i < event.overlapsEvents?.length;
+                  i++
+                ) {
+                  if (event.overlapsEvents[index].percentPositionX !== posX) {
+                    currentEvent.percentWidth = posX
+                    break
+                  }
+                  posX += event.overlapsEvents[index].percentWidth || 0
+                }
+              } else {
+                event.overlapsEvents?.forEach((eventOverlapsed, index) => {
+                  eventOverlapsed.percentPositionX = index * percentWidth
+                })
+                currentEvent.percentPositionX = 100 - percentWidth
+              }
+
+              event.percentWidth = percentWidth
+            } else {
+              eventWidthPercent -= event.percentWidth
+            }
           }
+
+          event?.overlapsEvents?.push(currentEvent)
         })
 
         if (eventWidthPercent < 100) {
           currentEvent.percentWidth = eventWidthPercent
+
+          let posX = 0
+          let event: EventType
+          for (const index in currentEvent.overlapsEvents) {
+            if (currentEvent.overlapsEvents[index].percentPositionX != posX) {
+              currentEvent.percentWidth = posX
+              break
+            }
+            posX += currentEvent.overlapsEvents[index].percentWidth || 0
+          }
+
+          currentEvent.percentPositionX = posX
         }
       }
     }
   }
-  //   }
-  // }
 
   return eventSorted
 }
 
+// export const getPositionEventX = (event: EventType) => {
+//   if (!event.overlapsEvents || event.overlapsEvents?.length == 0)
+//     return 0
+//   else {
+//     const overlapsSorted = [...event.overlapsEvents, event].sort((eventA, eventB) => {
+//       if(eventA.endDateTime )
+//     })
+//   }
+// }
 export const getPositionEventPercent = (startDateTime: Date) => {
   const startHours = startDateTime.getHours() + startDateTime.getMinutes() / 60
 

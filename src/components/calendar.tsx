@@ -25,9 +25,11 @@ const Calendar = () => {
       <div className={styles.hoursLinesContainer}>
         {hoursLines}
       </div>
-      {
-        events?.map((input, index) => <Event key={index} {...input} />)
-      }
+      <div className={styles.eventsContainer}>
+        {
+          events?.map((input, index) => <Event key={index} {...input} />)
+        }
+      </div>
     </div>
   )
 }

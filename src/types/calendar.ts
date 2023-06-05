@@ -6,6 +6,8 @@ export type EventType = {
   startDateTime: Date
   endDateTime: Date
   percentWidth?: number
+  percentPositionX?: number
+  overlapsEvents?: EventType[]
 }
 
 export type InputType = {
