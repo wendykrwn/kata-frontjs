@@ -1,19 +1,23 @@
 import styles from "../styles/calendar.module.css"
 import inputs from "../data/input.json"
 import Event from "./event"
+import { useEffect, useState } from "react"
+import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent } from "../utils/calendar"
+import { Input } from "../types/calendar"
 
-type CalendarProps = {
-  firstHour: number,
-  lastHour: number
-}
-const Calendar = ({
-  firstHour,
-  lastHour,
-}: CalendarProps) => {
+const Calendar = () => {
 
-  const numbersOfLines = lastHour - firstHour
+  const [events, setEvents] = useState<Input[]>([])
+  useEffect(() => {
+
+    const inputsSorted = sortByStartAndEndTime(inputs)
+    if (inputsSorted?.length > 0)
+      setEvents(inputsSorted)
+  }, [inputs])
+
+  const numbersOfLines =  LASTCALENDARHOURS - FIRSTCALENDARHOURS
   const hoursLines = new Array(numbersOfLines).fill(0).map((v, i) => (
-    <div className={styles.hoursLines} key={i}>{i + firstHour}</div>))
+    <div className={styles.hoursLines} key={i}>{i + FIRSTCALENDARHOURS}</div>))
   
   return (
     <div className={styles.calendar}>
@@ -21,7 +25,7 @@ const Calendar = ({
         {hoursLines}
       </div>
       {
-        inputs?.map((input, index) => <Event {...input} />)
+        events?.map((input, index) => <Event key={index} {...input} />)
       }
     </div>
   )

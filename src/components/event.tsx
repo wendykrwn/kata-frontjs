@@ -1,4 +1,5 @@
 import styles from "../styles/calendar.module.css"
+import { FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent } from "../utils/calendar";
 
 type EventProps = {
   id: number;
@@ -8,7 +9,14 @@ type EventProps = {
 
 const Event = ({ start, id, duration }:EventProps) => {
   return (
-    <div id={id.toString()} className={styles.event}>
+    <div
+      key={id}
+      id={id.toString()}
+      className={styles.event}
+      style={{
+        height: `${getHeightEventPercent(FIRSTCALENDARHOURS, LASTCALENDARHOURS, duration)}%`
+      }}
+    >
       {id}
       <div className={styles.tooltip}>
         <div>{start}</div>
