@@ -26,7 +26,8 @@ const Event = ({ start, id, duration, percentWidth, startDateTime, percentPositi
         
       }}
     >
-      {id}
+      {id} -
+      {start} - {duration}
       {/* <div className={styles.tooltip}>
         <div>{start}</div>
         <div>{duration}min</div>

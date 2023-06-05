@@ -14,6 +14,7 @@ const Calendar = () => {
     if (events?.length > 0)
       setEvents(events)
     
+    console.log({events})
   }, [inputs])
 
   const numbersOfLines =  LASTCALENDARHOURS - FIRSTCALENDARHOURS
