@@ -2,17 +2,18 @@ import styles from "../styles/calendar.module.css"
 import inputs from "../data/input.json"
 import Event from "./event"
 import { useEffect, useState } from "react"
-import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent } from "../utils/calendar"
+import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent, getPositionEventPercent, parseTime, getWidthEventPercent } from "../utils/calendar"
 import { EventType } from "../types/calendar"
 
 const Calendar = () => {
 
   const [events, setEvents] = useState<EventType[]>([])
+  
   useEffect(() => {
-
-    const inputsSorted = sortByStartAndEndTime(inputs)
-    if (inputsSorted?.length > 0)
-      setEvents(inputsSorted)
+    const events =  getWidthEventPercent(inputs)
+    if (events?.length > 0)
+      setEvents(events)
+    
   }, [inputs])
 
   const numbersOfLines =  LASTCALENDARHOURS - FIRSTCALENDARHOURS

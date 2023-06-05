@@ -5,6 +5,7 @@ export type EventType = {
   end: string
   startDateTime: Date
   endDateTime: Date
+  percentWidth?: number
 }
 
 export type InputType = {

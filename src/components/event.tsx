@@ -14,7 +14,7 @@ const Event = ({ start, id, duration }:EventProps) => {
       id={id.toString()}
       className={styles.event}
       style={{
-        height: `${getHeightEventPercent(FIRSTCALENDARHOURS, LASTCALENDARHOURS, duration)}%`
+        height: `${getHeightEventPercent(duration)}%`
       }}
     >
       {id}

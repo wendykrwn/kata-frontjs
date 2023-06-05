@@ -64,13 +64,73 @@ export const sortByStartAndEndTime = (inputs: InputType[]) => {
   return inputParsed
 }
 
-const isOverlap = (inputA: EventType, inputB: EventType) => {}
+const isOverlap = (inputA: EventType, inputB: EventType) => {
+  const { startDateTime: startDateTimeA, endDateTime: endDateTimeA } = inputA
+  const { startDateTime: startDateTimeB, endDateTime: endDateTimeB } = inputB
+  if (
+    (startDateTimeA < endDateTimeB && endDateTimeA > startDateTimeB) ||
+    (startDateTimeB < endDateTimeA && endDateTimeB > startDateTimeA)
+  ) {
+    return true
+  } else return false
+}
 
-export const getHeightEventPercent = (
-  firstCalendarHours: number,
-  lastCalendarHours: number,
-  duration: number
-) => {
+export const getWidthEventPercent = (inputs: InputType[]) => {
+  const eventSorted: EventType[] = sortByStartAndEndTime(inputs)
+
+  console.log({ eventSorted })
+
+  if (eventSorted?.length > 0) {
+    eventSorted[0].percentWidth = 100
+
+    for (let i = 1; i < eventSorted.length; i++) {
+      // for (let j = i + 1; j < eventSorted.length; j++) {
+      //   if (i !== j) {
+      const currentEvent = eventSorted[i]
+      // Liste des events qui overlaps avec eventSorted[j]
+      const overlapsEventToTheNext = [...eventSorted]
+        .splice(0, i)
+        ?.filter((event) => isOverlap(event, currentEvent))
+
+      const numberOfoverlapsEvent = overlapsEventToTheNext.length
+
+      if (numberOfoverlapsEvent == 0) currentEvent.percentWidth = 100
+      else {
+        const percentWidth = 100 / (numberOfoverlapsEvent + 1)
+        currentEvent.percentWidth = percentWidth
+        let eventWidthPercent = 100
+
+        overlapsEventToTheNext.forEach((event) => {
+          if (event.percentWidth && event.percentWidth >= percentWidth) {
+            event.percentWidth = percentWidth
+          } else {
+            if (event.percentWidth) eventWidthPercent -= event.percentWidth
+          }
+        })
+
+        if (eventWidthPercent < 100) {
+          currentEvent.percentWidth = eventWidthPercent
+        }
+      }
+    }
+  }
+  //   }
+  // }
+
+  return eventSorted
+}
+
+export const getPositionEventPercent = (startDateTime: Date) => {
+  const startHours = startDateTime.getHours() + startDateTime.getMinutes() / 60
+
+  return (
+    ((startHours - FIRSTCALENDARHOURS) /
+      (LASTCALENDARHOURS - FIRSTCALENDARHOURS)) *
+    100
+  )
+}
+
+export const getHeightEventPercent = (duration: number) => {
   // end - start => 100%, duration / 60 => ?
-  return ((duration / 60) * 100) / (lastCalendarHours - firstCalendarHours)
+  return ((duration / 60) * 100) / (LASTCALENDARHOURS - FIRSTCALENDARHOURS)
 }
