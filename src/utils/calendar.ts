@@ -1,4 +1,4 @@
-import { Input } from "../types/calendar"
+import { EventType, InputType } from "../types/calendar"
 
 export const FIRSTCALENDARHOURS = 9
 export const LASTCALENDARHOURS = 21
@@ -27,22 +27,44 @@ export const parseDateHours = (date: Date) => {
   }${date.getHours()}:${date.getMinutes()}`
 }
 
-export const sortByStartAndEndTime = (inputs: Input[]) => {
-  inputs.sort((inputA, inputB) => {
-    const startA = parseTime(inputA.start)
-    const startB = parseTime(inputB.start)
-    const endA = getEndEvent(inputA.start, inputA.duration)
-    const endB = getEndEvent(inputB.start, inputB.duration)
+export const parseEvent = (inputs: InputType[]) => {
+  const events: EventType[] = []
 
-    if (startA < startB) return -1
-    else if (startA > startB) return 1
-    else if (endA > endB) return -1
-    else if (endA < endB) return 1
+  inputs.map((input) => {
+    const startDateTime = parseTime(input.start),
+      endDateTime = getEndEvent(input.start, input.duration),
+      end = parseDateHours(endDateTime)
+
+    events.push({
+      ...input,
+      startDateTime,
+      endDateTime,
+      end,
+    })
+    events.push()
+    return input
+  })
+
+  return events
+}
+
+export const sortByStartAndEndTime = (inputs: InputType[]) => {
+  const inputParsed = parseEvent(inputs)
+  inputParsed.sort((inputA, inputB) => {
+    const { startDateTime: startDateTimeA, endDateTime: endDateTimeA } = inputA
+    const { startDateTime: startDateTimeB, endDateTime: endDateTimeB } = inputB
+
+    if (startDateTimeA < startDateTimeB) return -1
+    else if (startDateTimeA > startDateTimeB) return 1
+    else if (endDateTimeA > endDateTimeB) return -1
+    else if (endDateTimeA < endDateTimeB) return 1
     else return 0
   })
 
-  return inputs
+  return inputParsed
 }
+
+const isOverlap = (inputA: EventType, inputB: EventType) => {}
 
 export const getHeightEventPercent = (
   firstCalendarHours: number,

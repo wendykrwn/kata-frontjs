@@ -3,11 +3,11 @@ import inputs from "../data/input.json"
 import Event from "./event"
 import { useEffect, useState } from "react"
 import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent } from "../utils/calendar"
-import { Input } from "../types/calendar"
+import { EventType } from "../types/calendar"
 
 const Calendar = () => {
 
-  const [events, setEvents] = useState<Input[]>([])
+  const [events, setEvents] = useState<EventType[]>([])
   useEffect(() => {
 
     const inputsSorted = sortByStartAndEndTime(inputs)
