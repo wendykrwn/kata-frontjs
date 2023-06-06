@@ -86,10 +86,9 @@ export const getWidthEventPercent = (inputs: InputType[]) => {
     for (let i = 1; i < eventSorted.length; i++) {
       const currentEvent = eventSorted[i]
       const overlapsEvents = [...eventSorted]
-        .splice(0, i)
-        ?.filter((event) => isOverlap(event, currentEvent))
-
-      currentEvent.overlapsEvents = [...overlapsEvents]
+        .slice(0, i)
+        .filter((event) => isOverlap(event, currentEvent))
+      currentEvent.overlapsEvents = overlapsEvents
 
       const numberOfoverlapsEvent = overlapsEvents.length
 
@@ -102,11 +101,15 @@ export const getWidthEventPercent = (inputs: InputType[]) => {
         let eventWidthPercent = 100
 
         const eventsOverlapsArePlaced = currentEvent.overlapsEvents?.find(
-          (val, index) =>
-            val.percentWidth &&
-            val.percentPositionX !== index * val.percentWidth
+          (val, index) => {
+            return (
+              val.percentWidth &&
+              val.percentPositionX !== index * val.percentWidth
+            )
+          }
         )
-        overlapsEvents.forEach((eventOverlapsed, index) => {
+
+        currentEvent.overlapsEvents.forEach((eventOverlapsed, index) => {
           if (
             eventOverlapsed.overlapsEvents &&
             !eventOverlapsed.overlapsEvents.includes(currentEvent)
@@ -131,11 +134,9 @@ export const getWidthEventPercent = (inputs: InputType[]) => {
                   posX += currentEvent.overlapsEvents[index].percentWidth || 0
                 }
               } else {
-                eventOverlapsed.overlapsEvents?.forEach(
-                  (eventOverlapsed, index) => {
-                    eventOverlapsed.percentPositionX = index * percentWidth
-                  }
-                )
+                currentEvent.overlapsEvents?.forEach((eventOverlapsed, y) => {
+                  eventOverlapsed.percentPositionX = y * percentWidth
+                })
                 currentEvent.percentPositionX = 100 - percentWidth
               }
 
@@ -145,7 +146,8 @@ export const getWidthEventPercent = (inputs: InputType[]) => {
             }
           }
 
-          eventOverlapsed?.overlapsEvents?.push(currentEvent)
+          if (!eventOverlapsed?.overlapsEvents?.includes(currentEvent))
+            eventOverlapsed?.overlapsEvents?.push(currentEvent)
         })
 
         if (eventWidthPercent < 100) {

@@ -85,11 +85,6 @@
     "duration": 30
   },
   {
-    "id": 21,
-    "start": "20:15",
-    "duration": 30
-  },
-  {
     "id": 18,
     "start": "20:13",
     "duration": 103
@@ -103,5 +98,17 @@
     "id": 20,
     "start": "20:46",
     "duration": 104
+  },
+  {
+    "id": 21,
+    "start": "20:15",
+    "duration": 30
+  },
+
+  {
+    "id": 24,
+    "start": "21:00",
+    "duration": 120
   }
+
 ]
