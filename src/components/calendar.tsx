@@ -2,7 +2,7 @@ import styles from "../styles/calendar.module.css"
 import inputs from "../data/input.json"
 import Event from "./event"
 import { useEffect, useState } from "react"
-import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent, getPositionEventPercent, parseTime, getWidthEventPercent } from "../utils/calendar"
+import { sortByStartAndEndTime, FIRSTCALENDARHOURS, LASTCALENDARHOURS, getPositionEventPercent, parseTime, buildMatrix } from "../utils/calendar"
 import { EventType } from "../types/calendar"
 
 const Calendar = () => {
@@ -10,11 +10,12 @@ const Calendar = () => {
   const [events, setEvents] = useState<EventType[]>([])
   
   useEffect(() => {
-    const events =  getWidthEventPercent(inputs)
-    if (events?.length > 0)
-      setEvents(events)
+    // const events =  getWidthEventPercent(inputs)
+    // if (events?.length > 0)
+    //   setEvents(events)
     
-    console.log({events})
+    buildMatrix(inputs)
+
   }, [inputs])
 
   const numbersOfLines =  LASTCALENDARHOURS - FIRSTCALENDARHOURS
