@@ -1,7 +1,7 @@
 import { EventType, InputType, MatrixEventType } from "../types/calendar"
 
 export const FIRSTCALENDARHOURS = 9
-export const LASTCALENDARHOURS = 23
+export const LASTCALENDARHOURS = 21
 export const parseTime = (timeString: string) => {
   const [hours, minutes] = timeString.split(":")
   const date = new Date()
