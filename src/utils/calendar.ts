@@ -2,24 +2,6 @@ import { EventType, InputType, MatrixEventType } from "../types/calendar"
 
 export const FIRSTCALENDARHOURS = 9
 export const LASTCALENDARHOURS = 21
-export const parseTime = (timeString: string) => {
-  const [hours, minutes] = timeString.split(":")
-  const date = new Date()
-  date.setHours(parseInt(hours))
-  date.setMinutes(parseInt(minutes))
-  date.setSeconds(0)
-  date.setMilliseconds(0)
-  return date
-}
-
-export const getEndEvent = (start: string, duration: number) => {
-  const startEvent = parseTime(start)
-
-  const endEvent = new Date(startEvent)
-  endEvent.setMinutes(endEvent.getMinutes() + duration)
-
-  return endEvent
-}
 
 export const parseDateHours = (date: Date) => {
   return `${date.getHours().toString().padStart(2, "0")}:${date
@@ -32,14 +14,10 @@ export const parseEvent = (inputs: InputType[]) => {
   const events: EventType[] = []
 
   inputs.map((input) => {
-    const startDateTime = parseTime(input.start),
-      endDateTime = getEndEvent(input.start, input.duration),
-      end = parseDateHours(endDateTime)
+    const end = getEnd(input.start, input.duration)
 
     events.push({
       ...input,
-      startDateTime,
-      endDateTime,
       end,
       overlapsEvents: [],
     })
@@ -53,8 +31,8 @@ export const parseEvent = (inputs: InputType[]) => {
 export const sortByStartAndEndTime = (inputs: InputType[]) => {
   const inputParsed = parseEvent(inputs)
   inputParsed.sort((inputA, inputB) => {
-    const { startDateTime: startDateTimeA, endDateTime: endDateTimeA } = inputA
-    const { startDateTime: startDateTimeB, endDateTime: endDateTimeB } = inputB
+    const { start: startDateTimeA, end: endDateTimeA } = inputA
+    const { start: startDateTimeB, end: endDateTimeB } = inputB
 
     if (startDateTimeA < startDateTimeB) return -1
     else if (startDateTimeA > startDateTimeB) return 1
@@ -66,20 +44,12 @@ export const sortByStartAndEndTime = (inputs: InputType[]) => {
   return inputParsed
 }
 
-const isOverlap = (inputA: EventType, inputB: EventType) => {
-  const { startDateTime: startDateTimeA, endDateTime: endDateTimeA } = inputA
-  const { startDateTime: startDateTimeB, endDateTime: endDateTimeB } = inputB
-  if (
-    (startDateTimeA < endDateTimeB && endDateTimeA > startDateTimeB) ||
-    (startDateTimeB < endDateTimeA && endDateTimeB > startDateTimeA)
-  ) {
-    return true
-  } else return false
+export const parseHourToDate = (hour: string) => {
+  const [hours, mins] = hour.split(":").map(Number)
+  return new Date(0, 0, 0, hours, mins)
 }
-
 export const getEnd = (start: string, duration: number) => {
-  const [hours, mins] = start.split(":").map(Number)
-  const date = new Date(0, 0, 0, hours, mins)
+  const date = parseHourToDate(start)
   date.setMinutes(date.getMinutes() + duration)
   return `${date.getHours().toString().padStart(2, "0")}:${date
     .getMinutes()
@@ -87,7 +57,8 @@ export const getEnd = (start: string, duration: number) => {
     .padStart(2, "0")}`
 }
 
-export const getPositionEventPercent = (startDateTime: Date) => {
+export const getPositionEventPercent = (start: string) => {
+  const startDateTime = parseHourToDate(start)
   const startHours = startDateTime.getHours() + startDateTime.getMinutes() / 60
 
   return (
@@ -98,7 +69,6 @@ export const getPositionEventPercent = (startDateTime: Date) => {
 }
 
 export const getHeightEventPercent = (duration: number) => {
-  // end - start => 100%, duration / 60 => ?
   return ((duration / 60) * 100) / (LASTCALENDARHOURS - FIRSTCALENDARHOURS)
 }
 
@@ -127,20 +97,17 @@ const putEventInRowsMatrix = (matrix: MatrixEventType, events: EventType[]) => {
   }
 }
 
-// count overlapsmax to the right
 const countOverlapsMax = (
   matrix: MatrixEventType,
   event: EventType,
   renderingEvent: EventType[]
 ) => {
-  const hours = Object.keys(matrix)
-  hours.sort()
+  const hours = Object.keys(matrix).sort()
   event.overlapsMax = 0
   for (const hour of hours) {
     if (matrix[hour].includes(event)) {
       let overlapsLength = matrix[hour].length
 
-      // on rajoute le tableau dans overlapsMax
       if (event.overlapsMax < overlapsLength) {
         event.overlapsMax = matrix[hour].length
       }
@@ -154,15 +121,12 @@ const countOverlapsMax = (
     }
   }
 
-  setWidthOfOneEvent(event, renderingEvent)
+  setWidthAdPositionOfOneEvent(event, renderingEvent)
 }
 
-// chercher si les autres chevauchement ont déjà une taille et une position
-
-const setWidthOfOneEvent = (
+const setWidthAdPositionOfOneEvent = (
   event: EventType,
   renderingEvents: EventType[]
-  // widthMax = 100
 ) => {
   let widthMax = 100
   let posX = 0
@@ -172,7 +136,6 @@ const setWidthOfOneEvent = (
   )
 
   if (event.overlapsMax)
-    // Calculer le width restant
     overlapsEvents?.map((overlapsed, index) => {
       if (renderingEvents.includes(overlapsed) && index !== indexOfEvent) {
         widthMax -= overlapsed.percentWidth || 0
@@ -180,13 +143,10 @@ const setWidthOfOneEvent = (
       }
     })
 
-  // position
-  // trouver le premier endroit pas encore placé de gauche à droite
-
   let eventWidth = widthMax / (event.overlapsMax ?? 1)
 
   if (overlapsEvents) {
-    const overlapsEventsCopy = [...overlapsEvents]
+    ;[...overlapsEvents]
       .filter((overlapsed) => renderingEvents.includes(overlapsed))
       .sort((overlapsedA, overlapsedB) => {
         if (
@@ -198,7 +158,7 @@ const setWidthOfOneEvent = (
           return overlapsedA.percentPositionX - overlapsedB.percentPositionX
         }
       })
-      .find((overlapsed, index, overlapsEventSorted) => {
+      .find((overlapsed) => {
         if (
           overlapsed.percentPositionX &&
           overlapsed.percentPositionX != posX
@@ -218,17 +178,15 @@ const setWidthOfOneEvent = (
   }
 
   if (event.overlapsMax) {
-    // taille
     event.percentWidth = eventWidth
 
-    // position
     event.percentPositionX = posX
 
     renderingEvents.push(event)
   }
 }
 
-const setWidthEvents = (
+const setWidthAndPositionEvents = (
   matrix: MatrixEventType,
   events: EventType[],
   renderingEvents: EventType[]
@@ -249,7 +207,7 @@ export const buildMatrix = (inputs: InputType[]): EventType[] => {
 
   putEventInRowsMatrix(matrix, events)
 
-  setWidthEvents(matrix, events, renderingEvents)
+  setWidthAndPositionEvents(matrix, events, renderingEvents)
 
   return renderingEvents
 }
