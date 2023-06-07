@@ -102,8 +102,7 @@ const countOverlapsMax = (
   event: EventType,
   renderingEvent: EventType[]
 ) => {
-  const hours = Object.keys(matrix)
-  hours.sort()
+  const hours = Object.keys(matrix).sort()
   event.overlapsMax = 0
   for (const hour of hours) {
     if (matrix[hour].includes(event)) {
