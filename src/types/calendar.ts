@@ -3,8 +3,6 @@ export interface EventType {
   start: string
   duration: number
   end: string
-  startDateTime: Date
-  endDateTime: Date
   percentWidth?: number
   percentPositionX?: number
   overlapsEvents?: EventType[]

@@ -3,16 +3,7 @@ import styles from "../styles/calendar.module.css"
 import {  getHeightEventPercent, getPositionEventPercent } from "../utils/calendar";
 import { EventType } from "../types/calendar";
 
-type EventProps = {
-  id: number;
-  start: string;
-  duration: number;
-  percentWidth?: number;
-  startDateTime: Date
-  percentPositionX?: number
-};
-
-const Event = ({ start, id, duration, percentWidth, startDateTime, percentPositionX }: EventProps) => {
+const Event = ({ start, id, duration, percentWidth, percentPositionX,...props }: EventType) => {
   return (
     <div
       key={id}
@@ -21,7 +12,7 @@ const Event = ({ start, id, duration, percentWidth, startDateTime, percentPositi
       style={{
         height: `${getHeightEventPercent(duration)}%`,
         width: `${percentWidth}%`,
-        top: `${getPositionEventPercent(startDateTime)}%`,
+        top: `${getPositionEventPercent(start)}%`,
         left: `${percentPositionX}%`
         
       }}
