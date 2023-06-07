@@ -1,4 +1,4 @@
-import { EventType, InputType } from "../types/calendar"
+import { EventType, InputType, MatrixEventType } from "../types/calendar"
 
 export const FIRSTCALENDARHOURS = 9
 export const LASTCALENDARHOURS = 24
@@ -103,7 +103,7 @@ export const getHeightEventPercent = (duration: number) => {
 }
 
 const getRowsMatrix = (events: EventType[]) => {
-  const matrixOneColumn: { [hour: string]: EventType[] } = {}
+  const matrixOneColumn: MatrixEventType = {}
 
   events.forEach((event) => {
     const { start, end } = event
@@ -114,6 +114,20 @@ const getRowsMatrix = (events: EventType[]) => {
   return matrixOneColumn
 }
 
+const putEventInRowsMatrix = (matrix: MatrixEventType, events: EventType[]) => {
+  const hours = Object.keys(matrix)
+  hours.sort()
+
+  for (const hour of hours) {
+    events.forEach((event) => {
+      if (hour < event.end && hour >= event.start) {
+        matrix[hour].push(event)
+      }
+    })
+  }
+  console.log({ matrix })
+}
+
 export const buildMatrix = (inputs: InputType[]) => {
   const events: EventType[] = sortByStartAndEndTime(inputs)
 
@@ -121,6 +135,7 @@ export const buildMatrix = (inputs: InputType[]) => {
   const matrix = getRowsMatrix(events)
 
   //mettre tous les events dans les lignes correspondantes
+  putEventInRowsMatrix(matrix, events)
   //calculer la largeur
   // calculer la position
 }

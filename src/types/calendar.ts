@@ -15,3 +15,7 @@ export type InputType = {
   start: string
   duration: number
 }
+
+export type MatrixEventType = {
+  [hour: string]: EventType[]
+}
