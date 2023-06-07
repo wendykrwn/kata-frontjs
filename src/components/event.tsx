@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import styles from "../styles/calendar.module.css"
-import { FIRSTCALENDARHOURS, LASTCALENDARHOURS, getHeightEventPercent, getPositionEventPercent } from "../utils/calendar";
+import {  getHeightEventPercent, getPositionEventPercent } from "../utils/calendar";
 import { EventType } from "../types/calendar";
 
 type EventProps = {
@@ -26,12 +26,7 @@ const Event = ({ start, id, duration, percentWidth, startDateTime, percentPositi
         
       }}
     >
-      {id} -
-      {start} - {duration}
-      {/* <div className={styles.tooltip}>
-        <div>{start}</div>
-        <div>{duration}min</div>
-      </div> */}
+      <span>{id}</span> 
     </div>
   )
 }

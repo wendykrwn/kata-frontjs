@@ -1,6 +1,7 @@
 .calendar {
   --primary-color : #db1b5b;
   --primary-color-rgb : 219, 27, 91;
+  --border-color: #ffffff;
   height: 100vh;
   width: 100vw;
   position: relative;
@@ -34,8 +35,10 @@
   top: 0;
   left: 0;
   background-color: rgba(var(--primary-color-rgb), 0.2);
-  border: solid 1px var(--primary-color);
-  border-radius: 2px;
+  border: solid 1px var(--bg-color);
+  border-left: solid 5px var(--primary-color);
+  border-radius: 4px;
+  padding-left: 5px;
 }
 
 
