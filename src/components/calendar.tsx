@@ -13,8 +13,7 @@ const Calendar = () => {
     const events =  buildMatrix(inputs)
     if (events?.length > 0)
       setEvents(events)
-    
-  }, [inputs])
+  }, [])
   
   return (
     <div className={styles.calendar}>

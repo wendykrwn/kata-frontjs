@@ -112,7 +112,7 @@ const countOverlapsMax = (
         event.overlapsMax = matrix[hour].length
       }
 
-      if (!event.overlapsEvents || event.overlapsEvents?.length == 0)
+      if (!event.overlapsEvents || event.overlapsEvents?.length === 0)
         event.overlapsEvents = matrix[hour]
       else
         event.overlapsEvents = [
@@ -132,11 +132,11 @@ const setWidthAdPositionOfOneEvent = (
   let posX = 0
   const overlapsEvents = event.overlapsEvents
   const indexOfEvent = overlapsEvents?.findIndex(
-    (overlasped) => overlasped.id == event.id
+    (overlasped) => overlasped.id === event.id
   )
 
   if (event.overlapsMax)
-    overlapsEvents?.map((overlapsed, index) => {
+    overlapsEvents?.forEach((overlapsed, index) => {
       if (renderingEvents.includes(overlapsed) && index !== indexOfEvent) {
         widthMax -= overlapsed.percentWidth || 0
         if (event.overlapsMax) event.overlapsMax--
@@ -150,8 +150,8 @@ const setWidthAdPositionOfOneEvent = (
       .filter((overlapsed) => renderingEvents.includes(overlapsed))
       .sort((overlapsedA, overlapsedB) => {
         if (
-          overlapsedA.percentPositionX == undefined ||
-          overlapsedB.percentPositionX == undefined
+          overlapsedA.percentPositionX === undefined ||
+          overlapsedB.percentPositionX === undefined
         ) {
           return 0
         } else {
@@ -161,7 +161,7 @@ const setWidthAdPositionOfOneEvent = (
       .find((overlapsed) => {
         if (
           overlapsed.percentPositionX &&
-          overlapsed.percentPositionX != posX
+          overlapsed.percentPositionX !== posX
         ) {
           if (
             overlapsed.percentPositionX &&

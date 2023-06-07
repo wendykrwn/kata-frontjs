@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import styles from "../styles/calendar.module.css"
 import {  getHeightEventPercent, getPositionEventPercent } from "../utils/calendar";
 import { EventType } from "../types/calendar";
