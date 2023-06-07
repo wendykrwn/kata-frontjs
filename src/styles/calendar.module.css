@@ -39,6 +39,8 @@
   border-left: solid 5px var(--primary-color);
   border-radius: 4px;
   padding-left: 5px;
+  color: #292962;
+  font-weight:500;
 }
 
 
