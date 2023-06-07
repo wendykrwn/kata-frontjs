@@ -1,4 +1,4 @@
-export type EventType = {
+export interface EventType {
   id: number
   start: string
   duration: number
@@ -8,9 +8,10 @@ export type EventType = {
   percentWidth?: number
   percentPositionX?: number
   overlapsEvents?: EventType[]
+  overlapsMax?: number
 }
 
-export type InputType = {
+export interface InputType {
   id: number
   start: string
   duration: number

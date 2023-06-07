@@ -114,6 +114,7 @@ const getRowsMatrix = (events: EventType[]) => {
   return matrixOneColumn
 }
 
+
 const putEventInRowsMatrix = (matrix: MatrixEventType, events: EventType[]) => {
   const hours = Object.keys(matrix)
   hours.sort()
@@ -125,11 +126,110 @@ const putEventInRowsMatrix = (matrix: MatrixEventType, events: EventType[]) => {
       }
     })
   }
-  console.log({ matrix })
 }
 
-export const buildMatrix = (inputs: InputType[]) => {
+// count overlapsmax to the right
+const countOverlapsMax = (
+  matrix: MatrixEventType,
+  event: EventType,
+  renderingEvent: EventType[]
+) => {
+  const hours = Object.keys(matrix)
+  hours.sort()
+  event.overlapsMax = 0
+  for (const hour of hours) {
+    if (hour < event.end && hour >= event.start) {
+      let overlapsLength = matrix[hour].length
+
+      // on rajoute le tableau dans overlapsMax
+      if (event.overlapsMax < overlapsLength) {
+        event.overlapsMax = matrix[hour].length
+
+        event.overlapsEvents = matrix[hour]
+      }
+    }
+  }
+
+  setWidthOfOneEvent(event, renderingEvent)
+}
+
+// chercher si les autres chevauchement ont déjà une taille et une position
+
+const setWidthOfOneEvent = (
+  event: EventType,
+  renderingEvents: EventType[]
+  // widthMax = 100
+) => {
+  let widthMax = 100
+  let posX = 0
+  // position
+  const overlapsEvents = event.overlapsEvents
+  const indexOfEvent = overlapsEvents?.findIndex(
+    (overlasped) => overlasped.id == event.id
+  )
+
+  // Calculer le width restant
+  overlapsEvents?.map((overlapsed, index) => {
+    if (renderingEvents.includes(overlapsed) && index !== indexOfEvent) {
+      widthMax -= overlapsed.percentWidth || 0
+      if (event.overlapsMax) event.overlapsMax--
+    }
+  })
+
+  // position
+  // trouver le premier endroit pas encore placé
+  if (overlapsEvents) {
+    const overlapsEventsCopy = [...overlapsEvents]
+      .filter((overlapsed) => renderingEvents.includes(overlapsed))
+      .find((overlapsed) => {
+        if (
+          overlapsed.percentPositionX &&
+          overlapsed.percentPositionX != posX
+        ) {
+          return true
+        } else {
+          posX += overlapsed.percentWidth || 0
+          return false
+        }
+      })
+  }
+
+  if (event.overlapsMax) {
+    // taille
+    event.percentWidth = widthMax / event.overlapsMax
+
+    // position
+    event.percentPositionX = posX
+
+    renderingEvents.push(event)
+  } else {
+    console.log("error")
+  }
+}
+
+const setWidthEvents = (
+  matrix: MatrixEventType,
+  events: EventType[],
+  renderingEvents: EventType[]
+) => {
+  // trouver le nombre max de div à sa droite => 100 / nbmaxoverlaps
+
+  // parcours la matrix en row et demander y a combien de overlaps max à sa droite
+  const hours = Object.keys(matrix)
+  hours.sort()
+
+  // for (const hour of hours) {
+  events.forEach((event) => {
+    const overlapsMax = countOverlapsMax(matrix, event, renderingEvents)
+    // setWidthOfOneEvent(event, renderingEvents)
+    console.log({ event })
+  })
+  // }
+}
+
+export const buildMatrix = (inputs: InputType[]): EventType[] => {
   const events: EventType[] = sortByStartAndEndTime(inputs)
+  const renderingEvents: EventType[] = []
 
   //mettre toutes les lignes
   const matrix = getRowsMatrix(events)
@@ -137,7 +237,11 @@ export const buildMatrix = (inputs: InputType[]) => {
   //mettre tous les events dans les lignes correspondantes
   putEventInRowsMatrix(matrix, events)
   //calculer la largeur
+  setWidthEvents(matrix, events, renderingEvents)
   // calculer la position
+
+  console.log({ matrix })
+  return renderingEvents
 }
 
 // export const getWidthEventPercent = (inputs: InputType[]) => {

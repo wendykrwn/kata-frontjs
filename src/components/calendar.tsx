@@ -10,12 +10,10 @@ const Calendar = () => {
   const [events, setEvents] = useState<EventType[]>([])
   
   useEffect(() => {
-    // const events =  getWidthEventPercent(inputs)
-    // if (events?.length > 0)
-    //   setEvents(events)
+    const events =  buildMatrix(inputs)
+    if (events?.length > 0)
+      setEvents(events)
     
-    buildMatrix(inputs)
-
   }, [inputs])
 
   const numbersOfLines =  LASTCALENDARHOURS - FIRSTCALENDARHOURS
